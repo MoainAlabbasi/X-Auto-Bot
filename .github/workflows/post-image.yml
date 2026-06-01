@@ -1,0 +1,34 @@
+name: Post with Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: "Tweet text"
+        required: true
+        type: string
+      image:
+        description: "Image path in repo"
+        required: false
+        default: "assets/keif_hero.jpg"
+        type: string
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Post tweet with image
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          MODE: post
+          TWEET_TEXT: ${{ github.event.inputs.text }}
+          MEDIA_PATH: ${{ github.event.inputs.image }}
+        run: python main.py
